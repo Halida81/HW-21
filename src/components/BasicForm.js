@@ -1,107 +1,60 @@
-import { useReducer, useEffect, useState } from "react";
+import {useEffect, useRef, useState} from 'react'
 
-
-const initState = {
-  firstName:'',
-      firstNameIsValid:null,
-      lastName:'',
-      lastNameIsValid:null,
-      emailValue:'',
-      emailIsValid:null,
-}
-
-const  inputReducer = (state,action)=>{
-  if(action.type ==='NAME_CHANGE'){
-    return{
-      ...state,
-      firstName:action.firstName,
-      firstNameIsValid:action.firstName.trim().length > 2,
-    }
-  }
-  if(action.type === 'LAST_NAME_CHANGE'){
-    return{
-      ...state,
-      lastName:action.lastName,
-      lastNameIsValid:action.lastName.trim().length > 3
-    }
-  }
-  if(action.type === 'EMAIL_CHANGE'){
-    return{
-      ...state,
-      emailValue:action.emailValue,
-      emailIsValid:action.emailValue.includes('@')
-    }
-  }
-  // if(action.type === "ON_BLUR"){
-  //   return{
-  //    ...state,
-  // firstNameIsValid: state.firstName.trim().length > 2,
-  // lastNameIsValid: state.lastName.trim().length > 3,
-  // emailIsValid:   state.emailValue.includes('@'),
-  //   }
-  // }
-    return{
-     initState,
-  }
-    }
-  
 const BasicForm = () => {
 
-const [state, dispatch] = useReducer( inputReducer, initState)
-  
-const [inputIsValid,setInputIsValid] = useState(false)
+  const[formIsValid,setFormIsValid] = useState(false)
 
- useEffect(() =>{
-   if(state.firstName.trim().length > 2 && state.lastName.trim().length > 3 && state.emailValue.includes('@'))
-   setInputIsValid(true)
- },[state.firstName,state.lastName,state.emailValue])
+const firstNameRef = useRef('')
+const lastNameRef = useRef('')
+const emailRef = useRef('')
 
- const firstNameChangehandler = (event) =>{
-  dispatch({type:"NAME_CHANGE", firstName:event.target.value})
+const firstName = firstNameRef.current.value
+const lastName = lastNameRef.current.value
+const email = emailRef.current.value
+
+// const allData = firstName && lastName && email
+
+useEffect(() =>{
+  if(firstName.trim() && lastName.trim() === ''  && email.trim() === '')
+  setFormIsValid(true)
+},[firstName,lastName,email])
+
+const submitHandler = (e) =>{
+  e.prevetDefault()
+if(firstName.trim() === '' && lastName.trim() === '' && email.trim() === ''){
+  setFormIsValid(true)
+  return
 }
 
-const lastNameChangehandler = (event) =>{
-  dispatch({type:"LAST_NAME_CHANGE", lastName:event.target.value})
-}
-const emailChangehandler = (event) =>{
-  dispatch({type:"EMAIL_CHANGE", emailValue:event.target.value})
-}
+setFormIsValid(false)
+} 
 
-  const submitHandler = (e) =>{
-      e.preventDefault()
-      console.log(state.firstName);
-      console.log(state.lastName);
-      console.log(state.emailValue);
-    }
-   
-
+const classes = formIsValid ? 'form-control invalid' : 'form-control'
   return (
     <form onSubmit={submitHandler}>
-      <div className='control-group'>
-        <div className={state.firstNameIsValid === false ? ['form-control invalid'] : 'form-control'}>
-          <label htmlFor='name'>First Name</label>
-          <input type='text' id='name' onChange={firstNameChangehandler}
-           />
-         
+      <div className={classes}>
+        <div className="form-control">
+          <label htmlFor="firstName">First Name</label>
+          <input ref={firstNameRef} id="fisrtName" type="text" />
+          {formIsValid && <p>Please write at least 2 characters</p>}
         </div>
-        <div className={state.lastNameIsValid === false ? ['form-control invalid'] : 'form-control'}>
-          <label htmlFor='name'>Last Name</label>
-          <input type='text' id='name' onChange={lastNameChangehandler} 
-          />
-         
-    </div>
-      </div>
-      <div className={state.emailIsValid === false ? ['form-control invalid'] : 'form-control'}>
-        <label htmlFor='name'>Address</label>
-        <input type='text' id='name'onChange={emailChangehandler} 
-        />
-       
-      </div>
-      <div className='form-actions'>
-        <button disabled={!inputIsValid}>Submit</button>
+        <div className="form-control">
+          <label htmlFor="firstName">Last Name</label>
+          <input ref={lastNameRef} id="fisrtName" type="text" />
+          {formIsValid && <p>Please write at least 4 characters</p>}
+
+        </div>
+        <div className="form-control">
+          <label htmlFor="firstName">E-Mail Adress</label>
+          <input ref={emailRef} id="fisrtName" type="text" />
+          {formIsValid && <p>Please write @gmail</p>}
+
+        </div>
+        <div className="form-actions">
+        <button disabled={!formIsValid} >Submit</button>
+        </div>
       </div>
     </form>
   );
 };
-
 export default BasicForm;
