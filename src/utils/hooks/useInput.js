@@ -11,6 +11,7 @@ const inputReducer = (state, action) => {
       return {
         ...state,
         value: action.value,
+        isBlur:true,
       };
     case "ON_BLUR":
       return {
